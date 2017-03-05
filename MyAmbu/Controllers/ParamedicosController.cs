@@ -25,6 +25,7 @@ namespace MyAmbu.Controllers
         }
 
         // GET: api/Paramedicos
+        [Route("api/Paramedicos")]
         public IQueryable<Paramedicos> GetParamedicos()
         {
             return db.Paramedicos;
@@ -81,6 +82,7 @@ namespace MyAmbu.Controllers
         // POST: api/Paramedicos
         [Route("api/Paramedicos")]
         [ResponseType(typeof(Paramedicos))]
+        [HttpPost]
         public IHttpActionResult PostParamedicos(Paramedicos paramedicos)
         {
             if (!ModelState.IsValid)
@@ -88,25 +90,24 @@ namespace MyAmbu.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Paramedicos.Add(paramedicos);
-
             try
             {
+                db.Paramedicos.Add(paramedicos);
                 db.SaveChanges();
+                return Ok("Paramedico Guardado");
             }
             catch (DbUpdateException)
             {
                 if (ParamedicosExists(paramedicos.Cedula))
                 {
-                    return Conflict();
+                    return BadRequest("El paramedico ya existe");
                 }
                 else
                 {
                     throw;
                 }
             }
-
-            return CreatedAtRoute("DefaultApi", new { id = paramedicos.Cedula }, paramedicos);
+            //return CreatedAtRoute("DefaultApi", new { id = paramedicos.Cedula }, paramedicos);
         }
 
         // POST: api/Paramedicos
